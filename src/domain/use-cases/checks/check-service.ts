@@ -28,7 +28,12 @@ export class CheckService implements CheckServiceUseCase {
                 throw new Error('Service is offline')
             }
 
-            const log = new LogEntity(`Service ${url} working`, LogServerityLevel.low);
+            // `Service ${url} working`, LogServerityLevel.low
+            const log = new LogEntity({
+                message: `Service ${url} working`,
+                level: LogServerityLevel.low,
+                origin: 'check-service.ts'
+            });
             this.logRepository.saveLog(log)
             this.successCallback && this.successCallback();
         
@@ -37,7 +42,11 @@ export class CheckService implements CheckServiceUseCase {
         } catch (error) {
 
             const errorString = `${url} is not ok. ${error}`;
-            const log = new LogEntity(errorString, LogServerityLevel.high)
+            const log = new LogEntity({
+                message: errorString, 
+                level: LogServerityLevel.high,
+                origin: 'check-service.ts'
+            })
 
             this.logRepository.saveLog(log)
             

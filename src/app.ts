@@ -8,10 +8,7 @@ import { envs } from './config/plugins/envs.plugins';
 })()
 
 function main() {
-    // Server.start()
-
-    // console.log(envs.MAILER_EMAIL);
-    
+    Server.start()
 }
 
 

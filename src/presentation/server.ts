@@ -1,13 +1,16 @@
+import { LogServerityLevel } from "../domain/entities/log.entity";
 import { CheckService } from "../domain/use-cases/checks/check-service";
 import { FileSystemDatasource } from "../infraestructure/datasources/file-system.datasource";
+import { MongoLogDatasource } from "../infraestructure/datasources/mongo-log.datasource";
 import { LogRepositoryImpl } from "../infraestructure/repositories/log.repository";
 import { CronService } from "./cron/cron.service"
 import { EmailService } from "./email/email.service";
 
 
 
-const fileSystemRepository = new LogRepositoryImpl(
-    new FileSystemDatasource()
+const logRepository = new LogRepositoryImpl(
+    new FileSystemDatasource(),
+    // new MongoLogDatasource()
 )
 
 
@@ -16,7 +19,7 @@ const fileSystemRepository = new LogRepositoryImpl(
 export class Server {
 
 
-    public static start() {
+    public static async start() {
         console.log('Server started...')
 
         //TODO - Mandar email
@@ -27,19 +30,21 @@ export class Server {
         //     'maxidaidor@gmail.com'
         // ]);
 
-        // CronService.createJob(
-        //     '*/5 * * * * *',
-        //     () => {
-        //         const url = 'https://google.com/'
-        //         new CheckService(
-        //             () => console.log(`${url} is OK`),
-        //             (error) => console.log(error),
-        //             fileSystemRepository
+        const logs = await logRepository.getLogs(LogServerityLevel.high)
+        console.log(logs);
+        
+        CronService.createJob(
+            '*/5 * * * * *',
+            () => {
+                const url = 'https://google.com/'
+                new CheckService(
+                    () => console.log(`${url} is OK`),
+                    (error) => console.log(error),
+                    logRepository
                     
-        //         ).execute(url)
-        //         // new CheckService().execute('http://localhost:3000/')
-        //     }
-        // );
+                ).execute(url)
+            }
+        );
     }
 
 }

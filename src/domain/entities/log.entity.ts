@@ -31,16 +31,29 @@ export class LogEntity {
 
 
     static fromJson = (json: string): LogEntity => {
+        json = (json === '') ? '{}' : json
         const { message, level, createdAt, origin } = JSON.parse(json);
 
-        if(!message) throw new Error('Invalid message');
-        if(!level) throw new Error('Invalid level');
-        if(!createdAt) throw new Error('Invalid createdAt');
+       
 
         const log = new LogEntity({
             message, 
             level, 
             origin, 
+            createdAt
+        });
+
+        return log;
+    }
+
+
+    static fromObject = (obj: {[key: string]: any}): LogEntity => {
+        const {message, level, origin, createdAt} = obj
+
+        const log = new LogEntity({
+            message,
+            level,
+            origin,
             createdAt
         });
 
